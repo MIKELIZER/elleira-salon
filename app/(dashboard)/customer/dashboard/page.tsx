@@ -84,8 +84,8 @@ export default async function CustomerDashboard() {
             <div className="bg-[#FDF9F8] p-6 rounded-2xl border border-rose-100">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="font-bold text-slate-900 text-lg">{nextBooking.services?.name}</p>
-                  <p className="text-sm text-slate-500">Stylist: {nextBooking.profiles?.full_name}</p>
+                  <p className="font-bold text-slate-900 text-lg">{(nextBooking.services as any)?.name}</p>
+                  <p className="text-sm text-slate-500">Stylist: {(nextBooking.profiles as any)?.full_name}</p>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
                   nextBooking.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
