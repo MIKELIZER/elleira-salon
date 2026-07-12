@@ -184,7 +184,13 @@ export async function getAllBookings(staffIdFilter?: string) {
       .order('start_at', { ascending: false })
       
     if (staffIdFilter) {
-      query = query.eq('staff_id', staffIdFilter)
+      // staffIdFilter adalah auth.users.id, kita butuh profiles.id
+      const { data: profile } = await supabase.from('profiles').select('id').eq('auth_user_id', staffIdFilter).single()
+      if (profile) {
+        query = query.eq('staff_id', profile.id)
+      } else {
+        return { data: [], error: 'Profil staf tidak ditemukan' }
+      }
     }
     
     const { data, error } = await query
