@@ -125,7 +125,7 @@ export default function BookingWizard({ services }: { services: Service[] }) {
                   <div className="font-semibold">{svc.name}</div>
                   <div className="text-sm text-slate-500 mt-1">{svc.duration_minutes} Menit</div>
                   <div className="text-primary font-medium mt-2">
-                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(svc.price)}
+                    {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(svc.price)}
                   </div>
                 </div>
               ))}
@@ -198,7 +198,7 @@ export default function BookingWizard({ services }: { services: Service[] }) {
                 <div className="font-medium">{selectedService.name}</div>
                 
                 <div className="text-slate-500">Harga</div>
-                <div className="font-medium text-primary">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(selectedService.price)}</div>
+                <div className="font-medium text-primary">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(selectedService.price)}</div>
                 
                 <div className="text-slate-500">Tanggal</div>
                 <div className="font-medium">{format(date, 'EEEE, dd MMMM yyyy', { locale: localeId })}</div>
