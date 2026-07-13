@@ -130,10 +130,13 @@ export async function createBooking(payload: { serviceId: string, staffId: strin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Anda harus login untuk membuat booking.' }
 
+    const { data: profile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).single()
+    if (!profile) return { error: 'Profil pelanggan tidak ditemukan.' }
+
     const { error } = await supabase
       .from('bookings')
       .insert({
-        customer_id: user.id,
+        customer_id: profile.id,
         service_id: payload.serviceId,
         staff_id: payload.staffId,
         start_at: payload.startAt,
