@@ -43,8 +43,8 @@ async function sendNotificationEmail(to: string, subject: string, htmlContent: s
 
 export async function getAvailableSlots(dateStr: string, serviceId: string, staffId?: string) {
   try {
-    const { createSupabaseAdminClient } = await import('./auth')
-    const supabase = await createSupabaseAdminClient()
+    const { createSupabaseServerClient } = await import('./auth')
+    const supabase = await createSupabaseServerClient()
     
     // 1. Get Service Duration
     const { data: service } = await supabase.from('services').select('duration_minutes').eq('id', serviceId).single()
