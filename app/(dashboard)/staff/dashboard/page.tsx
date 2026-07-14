@@ -27,7 +27,7 @@ export default async function StaffDashboardPage() {
   const { data: availability } = await getOwnAvailability()
   
   // Fetch Bookings
-  const { data: allBookings } = await getAllBookings(profile?.id)
+  const { data: allBookings } = await getAllBookings(user.id)
   
   const TIMEZONE = 'Asia/Jakarta'
   const nowWib = toZonedTime(new Date(), TIMEZONE)
