@@ -78,12 +78,12 @@ export default async function StaffDashboardPage() {
                         <span className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold font-mono">
                           {format(startDate, 'HH:mm')}
                         </span>
-                        <h3 className="font-bold text-lg text-slate-900">{b.services.name}</h3>
+                        <h3 className="font-bold text-lg text-slate-900">{b.services?.name || '-'}</h3>
                       </div>
                       
                       <div className="text-slate-600 text-sm mb-4 sm:mb-0">
-                        Pelanggan: <span className="font-semibold text-slate-800">{b.customer.full_name}</span> 
-                        {b.customer.phone && ` (${b.customer.phone})`}
+                        Pelanggan: <span className="font-semibold text-slate-800">{b.customer?.full_name || 'Pelanggan Rahasia'}</span> 
+                        {b.customer?.phone && ` (${b.customer.phone})`}
                       </div>
                     </div>
                     

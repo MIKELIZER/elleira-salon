@@ -47,20 +47,20 @@ export default async function StaffBookingsPage() {
               return (
                 <TableRow key={b.id}>
                   <TableCell>
-                    <div className="font-medium">{b.customer.full_name}</div>
-                    <div className="text-xs text-slate-500 mb-1">{b.customer.phone || '-'}</div>
-                    {b.customer.customer_preferences?.[0]?.allergy_note && (
+                    <div className="font-medium">{b.customer?.full_name || 'Pelanggan Rahasia'}</div>
+                    <div className="text-xs text-slate-500 mb-1">{b.customer?.phone || '-'}</div>
+                    {b.customer?.customer_preferences?.[0]?.allergy_note && (
                       <div className="text-[10px] bg-red-50 text-red-700 p-1 border border-red-100 rounded inline-block mt-1">
                         ⚠️ Alergi: {b.customer.customer_preferences[0].allergy_note}
                       </div>
                     )}
-                    {b.customer.customer_preferences?.[0]?.general_note && (
+                    {b.customer?.customer_preferences?.[0]?.general_note && (
                       <div className="text-[10px] bg-slate-100 text-slate-700 p-1 border border-slate-200 rounded block mt-1">
                         Catatan: {b.customer.customer_preferences[0].general_note}
                       </div>
                     )}
                   </TableCell>
-                  <TableCell>{b.services.name}</TableCell>
+                  <TableCell>{b.services?.name || '-'}</TableCell>
                   <TableCell>
                     <div className="font-medium">{format(startDate, 'dd MMM yyyy', { locale: localeId })}</div>
                     <div className="text-xs text-slate-500">{format(startDate, 'HH:mm')} WIB</div>
