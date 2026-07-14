@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from '@/app/actions/auth'
 import { getOwnAvailability } from '@/app/actions/staff'
 import { getAllBookings } from '@/app/actions/booking'
 import { format, isToday } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
 import { id as localeId } from 'date-fns/locale'
 import { CalendarIcon, Clock, AlertCircle } from 'lucide-react'
 
@@ -28,8 +29,15 @@ export default async function StaffDashboardPage() {
   // Fetch Bookings
   const { data: allBookings } = await getAllBookings(profile?.id)
   
-  // Filter for today
-  const todaysBookings = allBookings?.filter(b => isToday(new Date(b.start_at))) || []
+  const TIMEZONE = 'Asia/Jakarta'
+  const nowWib = toZonedTime(new Date(), TIMEZONE)
+  const todayStr = format(nowWib, 'yyyy-MM-dd', { timeZone: TIMEZONE })
+
+  // Filter for today (in WIB timezone)
+  const todaysBookings = allBookings?.filter(b => {
+    const bookingWib = toZonedTime(new Date(b.start_at), TIMEZONE)
+    return format(bookingWib, 'yyyy-MM-dd', { timeZone: TIMEZONE }) === todayStr
+  }) || []
   
   // Urutkan berdasarkan waktu
   todaysBookings.sort((a, b) => new Date(a.start_at).getTime() - new Date(b.start_at).getTime())
