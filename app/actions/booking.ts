@@ -130,10 +130,14 @@ export async function createBooking(payload: { serviceId: string, staffId: strin
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Anda harus login untuk membuat booking.' }
 
-    const { data: profile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).single()
+    const { data: profile } = await supabase.from('profiles').select('id, email, full_name').eq('auth_user_id', user.id).single()
     if (!profile) return { error: 'Profil pelanggan tidak ditemukan.' }
 
-    const { error } = await supabase
+    // Dapatkan info layanan dan staf untuk email
+    const { data: svc } = await supabase.from('services').select('name').eq('id', payload.serviceId).single()
+    const { data: stf } = await supabase.from('profiles').select('full_name, email').eq('id', payload.staffId).single()
+
+    const { error, data: newBooking } = await supabase
       .from('bookings')
       .insert({
         customer_id: profile.id,
@@ -144,6 +148,8 @@ export async function createBooking(payload: { serviceId: string, staffId: strin
         status: 'pending',
         notes: payload.notes || ''
       })
+      .select('id')
+      .single()
 
     if (error) {
       if (error.code === '23P01') {
@@ -152,6 +158,26 @@ export async function createBooking(payload: { serviceId: string, staffId: strin
       return { error: error.message }
     }
     
+    // Kirim Notifikasi Email ke Pelanggan
+    if (profile.email) {
+      const startTimeWib = format(toZonedTime(new Date(payload.startAt), TIMEZONE), 'EEEE, dd MMM yyyy, HH:mm', { timeZone: TIMEZONE })
+      await sendNotificationEmail(
+        profile.email,
+        'Pesanan Diterima - Menunggu Konfirmasi Staf',
+        `Halo ${profile.full_name}, pesanan Anda untuk layanan ${svc?.name} bersama staf ${stf?.full_name} pada ${startTimeWib} WIB telah masuk ke sistem kami. Saat ini pesanan Anda berstatus <b>PENDING</b>. Anda akan menerima notifikasi lagi jika staf telah mengonfirmasinya.`
+      )
+    }
+
+    // (Opsional) Kirim notifikasi ke Staf
+    if (stf?.email) {
+      const startTimeWib = format(toZonedTime(new Date(payload.startAt), TIMEZONE), 'EEEE, dd MMM yyyy, HH:mm', { timeZone: TIMEZONE })
+      await sendNotificationEmail(
+        stf.email,
+        'Pesanan Baru Membutuhkan Konfirmasi Anda',
+        `Halo ${stf.full_name}, pelanggan ${profile.full_name} baru saja memesan layanan ${svc?.name} pada ${startTimeWib} WIB. Silakan login ke dashboard staf untuk menyetujuinya.`
+      )
+    }
+
     revalidatePath('/customer/booking')
     revalidatePath('/admin/bookings')
     revalidatePath('/staff/bookings')
@@ -165,12 +191,16 @@ export async function getCustomerBookings() {
   try {
     const supabase = await createSupabaseServerClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { error: 'Unauthorized', data: null }
+    if (!user) return { data: null, error: 'Unauthorized' }
+
+    // Ambil ID Profil dari ID Auth
+    const { data: profile } = await supabase.from('profiles').select('id').eq('auth_user_id', user.id).single()
+    if (!profile) return { data: null, error: 'Profil tidak ditemukan' }
 
     const { data, error } = await supabase
       .from('bookings')
       .select('*, services(name, price, duration_minutes), profiles!bookings_staff_id_fkey(full_name)')
-      .eq('customer_id', user.id)
+      .eq('customer_id', profile.id)
       .order('start_at', { ascending: false })
 
     if (error) return { error: error.message, data: null }
