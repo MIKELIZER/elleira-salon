@@ -31,12 +31,12 @@ export default async function StaffDashboardPage() {
   
   const TIMEZONE = 'Asia/Jakarta'
   const nowWib = toZonedTime(new Date(), TIMEZONE)
-  const todayStr = format(nowWib, 'yyyy-MM-dd', { timeZone: TIMEZONE })
+  const todayStr = format(nowWib, 'yyyy-MM-dd')
 
   // Filter for today (in WIB timezone)
   const todaysBookings = allBookings?.filter(b => {
     const bookingWib = toZonedTime(new Date(b.start_at), TIMEZONE)
-    return format(bookingWib, 'yyyy-MM-dd', { timeZone: TIMEZONE }) === todayStr
+    return format(bookingWib, 'yyyy-MM-dd') === todayStr
   }) || []
   
   // Urutkan berdasarkan waktu
