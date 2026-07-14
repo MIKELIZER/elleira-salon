@@ -1,24 +1,31 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import type { Transition, Variants } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2, delayChildren: 0.1 }
+  }
+}
+
+const itemTransition: Transition = {
+  type: 'spring',
+  stiffness: 100,
+  damping: 10
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: itemTransition }
+}
+
 export function ClientHero({ isLoggedIn, dashboardUrl }: { isLoggedIn: boolean, dashboardUrl: string }) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { staggerChildren: 0.2, delayChildren: 0.1 }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 100, damping: 10 } }
-  }
-
   return (
     <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-32 overflow-hidden bg-[#FDF9F8]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
